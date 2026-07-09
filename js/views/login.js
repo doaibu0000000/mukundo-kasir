@@ -31,11 +31,11 @@
     async applyBranding() {
       try {
         const s = await API.getPublicSettings();
-        const appName = s.app_name || "SURANTAKA";
+        const appName = s.app_name || "Mokundo";
         const appLogo = s.app_logo || "";
 
         const loginBrand = Helpers.$("#login-brand");
-        if (loginBrand) loginBrand.textContent = appName + " COFFEE";
+        if (loginBrand) loginBrand.textContent = appName + " Kasir";
 
         if (appLogo) {
           const loginLogo = Helpers.$("#login-logo");
@@ -44,7 +44,7 @@
           }
         }
 
-        document.title = s.app_title || (appName + " POS — Kasir");
+        document.title = s.app_title || (appName + " Kasir");
       } catch (_) {
         // If API not ready, use defaults — branding will be applied on login success
       }

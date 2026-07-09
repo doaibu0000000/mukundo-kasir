@@ -1,5 +1,5 @@
 /* ==========================================================================
-   sw.js — Service Worker for SURANTAKA POS (client-side / IndexedDB mode)
+   sw.js — Service Worker for Mokundo Kasir (client-side / IndexedDB mode)
 
    Strategy
    --------

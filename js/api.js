@@ -19,7 +19,7 @@
     // system
     ping: () => Promise.resolve("pong"),
     getAppInfo: () =>
-      Promise.resolve({ name: "SURANTAKA POS", version: "2.0.0", db_status: "ok" }),
+      Promise.resolve({ name: "Mokundo Kasir", version: "2.0.0", db_status: "ok" }),
 
     // auth
     login: (u, p) => run(() => Backend.Auth.login(u, p)),

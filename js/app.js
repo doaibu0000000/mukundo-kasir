@@ -127,8 +127,8 @@
     /* Apply branding from settings to sidebar, login, and document title */
     applyAppBranding() {
       const s = State.settings || {};
-      const appName = s.app_name || "SURANTAKA";
-      const appTitle = s.app_title || (appName + " POS — Kasir");
+      const appName = s.app_name || "Mokundo";
+      const appTitle = s.app_title || (appName + " Kasir");
       const appLogo = s.app_logo || "";
 
       // Sidebar brand name
@@ -146,7 +146,7 @@
 
       // Login brand name
       const loginBrand = Helpers.$("#login-brand");
-      if (loginBrand) loginBrand.textContent = appName + " COFFEE";
+      if (loginBrand) loginBrand.textContent = appName + " Kasir";
 
       // Login logo
       const loginLogo = Helpers.$("#login-logo");

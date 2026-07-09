@@ -501,7 +501,7 @@
         paper_width_mm: Number(s.paper_width) || 58,
         paper_chars: String(s.paper_chars || ""),
         store: {
-          name: s.store_name || "SURANTAKA COFFEE",
+          name: s.store_name || "Mokundo Kasir",
           address: s.store_address || "",
           phone: s.store_phone || "",
           promo_text: s.footer_note || "",
@@ -612,7 +612,7 @@
       };
 
       let body = "";
-      body += center(s.store_name || "SURANTAKA COFFEE") + "\n";
+      body += center(s.store_name || "Mokundo Kasir") + "\n";
       if (s.store_address) body += center(s.store_address) + "\n";
       if (s.store_phone) body += center("Telp. " + s.store_phone) + "\n";
       body += "=".repeat(W) + "\n";
@@ -657,7 +657,7 @@
       // --- Header toko ---
       let html = `<div class="receipt-preview" style="width:${modalPx}px">`;
       html += `<div class="rp-header">`;
-      html += `<div class="rp-store-name">${Helpers.escape(s.store_name || "SURANTAKA COFFEE")}</div>`;
+      html += `<div class="rp-store-name">${Helpers.escape(s.store_name || "Mokundo Kasir")}</div>`;
       if (s.store_address) html += `<div class="rp-store-info">${Helpers.escape(s.store_address)}</div>`;
       if (s.store_phone) html += `<div class="rp-store-info">Telp. ${Helpers.escape(s.store_phone)}</div>`;
       html += `</div>`;

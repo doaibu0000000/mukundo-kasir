@@ -1,16 +1,11 @@
-# SURANTAKA POS — Aplikasi Kasir Web + PWA (Neumorphism)
+# Mokundo Kasir — Aplikasi Kasir Web + PWA
 
-Aplikasi kasir (Point of Sale) **100% client-side** berbasis **IndexedDB** + **Tailwind CSS**.
-Bisa di-host di **GitHub Pages** (gratis, 24/7) atau dibuka langsung dari file (`file://`).
+Aplikasi kasir (Point of Sale) **100% client-side** berbasis **IndexedDB** +
+**Tailwind CSS**. Bisa di-host di **GitHub Pages** (gratis, 24/7) atau dibuka
+langsung dari file (`file://`).
 
-## Dua Mode
-
-| Mode | Penjelasan | File yang dipakai |
-|------|-----------|------------------|
-| **🌐 Web (Flask)** | Server Python + SQLite, multi-device shared DB | `app.py`, `server.py`, `config/`, `models/`, `repositories/`, `services/` |
-| **📱 Client-Side** | IndexedDB di browser, 1 device = 1 DB, deploy ke GitHub Pages | `frontend/` |
-
-> **Mode saat ini:** Client-Side (IndexedDB) — siap deploy ke GitHub Pages.
+> **Catatan:** Data tersimpan di IndexedDB browser — **1 browser = 1 database**.
+> Data tidak otomatis sync antar device.
 
 ---
 
@@ -23,62 +18,91 @@ Bisa di-host di **GitHub Pages** (gratis, 24/7) atau dibuka langsung dari file (
 | CRUD Kategori | ✅ | ❌ |
 | Transaksi Penjualan + Keranjang + Varian Pop-up | ✅ | ✅ |
 | Checkout (diskon % / Rp, kembalian, atomic transaction) | ✅ | ✅ |
-| Cetak Struk via `window.print()` (printer thermal 58mm) | ✅ | ✅ |
+| Cetak Struk via `window.print()` (printer thermal 58mm/80mm) | ✅ | ✅ |
 | Laporan Keuangan (filter tanggal + platform) | ✅ | ❌ |
-| Pengaturan Toko & QR Code fleksibel (URL WA / upload gambar) | ✅ | ❌ |
+| Pengaturan Toko & QR Code (URL WA / custom / upload gambar) | ✅ | ❌ |
 | 🌙 **Dark / Light Mode** (toggle switch, anti-flash, persisten) | ✅ | ✅ |
 
 Platform yang didukung: **Pickup, Take Away, GrabFood, ShopeeFood, GoFood**.
 
-### 🌙 Dark Mode (Solid Flat)
-Desain flat material dark menggunakan palet presisi:
+---
 
-| Token | Hex | Penggunaan |
-|-------|-----|-----------|
-| Main Background | `#121212` | Latar halaman utama |
-| Cards / Sidebar / Input | `#3b3b3b` | Semua kontainer & formulir |
-| Text & Icons | `#f6f6f6` | Teks utama, judul, ikon |
-| Raised / Hover | `#484848` | Hover tombol/nav, elemen timbul |
-| Inset | `#2a2a2a` | Input field, area cekung |
+## 🚀 Cara Menjalankan di Lokal
+
+### Opsi 1: Buka langsung di browser (paling mudah)
+Cukup **double-click `index.html`** — tidak perlu server apa pun!
+IndexedDB bekerja normal dari protokol `file://`.
+
+### Opsi 2: HTTP server lokal (diperlukan untuk Service Worker / PWA)
+Service Worker hanya bisa berjalan dari HTTP/HTTPS (bukan `file://`).
+Pilih salah satu:
+
+```bash
+# Python (sudah terinstall di kebanyakan komputer)
+python -m http.server 5000
+
+# atau Node.js
+npx serve .
+
+# atau PHP
+php -S localhost:5000
+```
+
+Lalu buka **`http://localhost:5000`** di browser.
+
+### Login Default
+| Role  | Username | Password |
+|-------|----------|----------|
+| Admin | `admin`  | `admin`  |
+| Kasir | `kasir`  | `kasir`  |
 
 ---
 
 ## 📱 PWA — Install ke Home Screen
-- Buka URL POS di **Chrome** (Android) / **Safari** (iPhone)
-- Chrome: tap **⋮** → **"Install app"**
-- Safari: tap **↑** → **"Add to Home Screen"**
-- Aplikasi muncul di home screen dengan ikon & nama toko Anda
-- Full-screen, tanpa address bar, seperti aplikasi native!
+1. Buka URL aplikasi di **Chrome** (Android) atau **Safari** (iPhone)
+2. Chrome: tap **⋮** → **"Install app"**
+   Safari: tap **↑** → **"Add to Home Screen"**
+3. Aplikasi muncul di home screen dengan ikon & nama toko Anda
+4. Full-screen, tanpa address bar, seperti aplikasi native!
 
 ---
 
-## 🏗️ Arsitektur (Client-Side / IndexedDB)
+## 🏗️ Struktur Folder (Modular)
 
 ```
-frontend/
+mokundo-kasir/
 ├── index.html              # SPA entry point
 ├── manifest.json           # PWA manifest (nama ikut settings)
 ├── sw.js                   # Service Worker (offline app-shell cache)
-├── icons/                  # PWA icons
-├── css/neu.css             # Custom styles + dark/light theme
+├── README.md
+├── css/
+│   └── neu.css             # Custom styles + dark/light theme + print
+├── icons/                  # PWA icons (auto-generated from logo)
+│   ├── icon-192.png
+│   ├── icon-512.png
+│   ├── icon-maskable-192.png
+│   ├── icon-maskable-512.png
+│   ├── apple-touch-icon.png
+│   ├── favicon-16.png
+│   └── favicon-32.png
 └── js/
     ├── db.js               # IndexedDB layer (buka DB, CRUD, seeding)
-    ├── backend.js          # Business logic (port dari Python services)
-    ├── api.js              # Wrapper async → memanggil Backend.*
-    ├── helpers.js           # Utility (formatRp, escape, fileToBase64, dll)
-    ├── notify.js            # SweetAlert2 notifications
-    ├── state.js             # App state (user, settings, cart)
-    ├── theme.js             # Dark/Light theme manager
-    ├── router.js            # SPA router + RBAC menu filter
-    ├── app.js               # Bootstrap
-    └── views/
-        ├── login.js
-        ├── dashboard.js
-        ├── products.js
-        ├── categories.js
-        ├── transaction.js
-        ├── reports.js
-        └── settings.js
+    ├── backend.js          # Business logic (auth, products, transactions, dll)
+    ├── api.js              # Wrapper async → memanggil Backend.* + RBAC
+    ├── helpers.js          # Utility (formatRp, escape, fileToBase64, dll)
+    ├── notify.js           # SweetAlert2 notifications
+    ├── state.js            # App state (user, settings, cart)
+    ├── theme.js            # Dark/Light theme manager
+    ├── router.js           # SPA router + RBAC menu filter
+    ├── app.js              # Bootstrap
+    └── views/              # Halaman SPA (modular per fitur)
+        ├── login.js        # Halaman login
+        ├── dashboard.js    # Dashboard admin (summary + chart)
+        ├── products.js     # CRUD produk + varian + upload gambar
+        ├── categories.js   # CRUD kategori
+        ├── transaction.js  # Kasir: katalog → keranjang → checkout → cetak
+        ├── reports.js      # Laporan keuangan + filter
+        └── settings.js     # Pengaturan toko, struk, QR, branding
 ```
 
 ### Alur Data
@@ -89,109 +113,59 @@ frontend/
 
 ---
 
-## 🚀 Deploy ke GitHub Pages
+## 🌐 Deploy ke GitHub Pages
 
-### Cara Paling Mudah: Deploy folder `frontend/`
+1. **Rename folder** root menjadi `mokundo-kasir` (klik kanan → Rename)
 
-1. **Push ke GitHub**
+2. **Init Git & push ke GitHub**
    ```bash
-   cd kasir
+   cd mokundo-kasir
    git init
    git add .
-   git commit -m "Initial commit: SURANTAKA POS"
-   git remote add origin https://github.com/USERNAME/kasir.git
+   git commit -m "Initial commit: Mokundo Kasir"
+   git branch -M main
+   git remote add origin https://github.com/USERNAME/mokundo-kasir.git
    git push -u origin main
    ```
 
-2. **Aktifkan GitHub Pages**
+3. **Aktifkan GitHub Pages**
    - Buka repo di GitHub → **Settings** → **Pages**
    - Source: **Deploy from a branch**
-   - Branch: `main` — folder: `/ (root)` atau `/frontend`
-   - Jika root: buat file `index.html` di root yang redirect ke `frontend/`
-   - **Rekomendasi**: set folder ke `/frontend` agar langsung serve
+   - Branch: `main` — folder: **`/ (root)`**
+   - **Save**
 
-3. **Buka aplikasi**
+4. **Buka aplikasi** (butuh ~1 menit untuk build pertama)
    ```
-   https://USERNAME.github.io/kasir/
+   https://USERNAME.github.io/mokundo-kasir/
    ```
-   (atau `https://USERNAME.github.io/kasir/frontend/` jika deploy dari root)
-
-### Jika deploy dari root (tanpa set folder)
-File `index.html` di root akan otomatis redirect ke `frontend/`.
 
 ---
 
-## 🧪 Uji Coba Lokal
-
-### Opsi 1: Buka langsung di browser
-Cukup double-click `frontend/index.html` — tidak perlu server!
-IndexedDB bekerja normal dari `file://` protocol.
-
-### Opsi 2: HTTP server lokal (untuk Service Worker)
-Service Worker hanya bisa di-serve dari HTTP/HTTPS (bukan `file://`).
-```bash
-cd frontend
-# Python
-python -m http.server 5000
-# atau Node.js
-npx serve .
-```
-Buka `http://localhost:5000`
-
-### Login default
-| Role  | Username | Password |
-|-------|----------|----------|
-| Admin | `admin`  | `admin`  |
-| Kasir | `kasir`  | `kasir`  |
+## 🧾 Contoh Order ID
+- Format: **`MK-260710-0001`**
+- `<PREFIX>-<YYMMDD>-<nomor urut 4 digit>`
+- Prefix default `MK` (bisa diganti di Pengaturan Toko)
 
 ---
 
-## ⚠️ Perbedaan Mode Client-Side vs Server
-
-| Aspek | Server (Flask) | Client-Side (IndexedDB) |
-|-------|---------------|------------------------|
-| Database | SQLite (server) | IndexedDB (browser) |
-| Multi-device | ✅ shared DB | ❌ 1 browser = 1 DB |
-| Cetak struk | Silent via Win32 GDI | Dialog `window.print()` |
-| Gambar produk | File di server disk | Base64 di IndexedDB |
-| Hosting | Butuh server Python | GitHub Pages (gratis) |
-| Offline | ❌ butuh server | ✅ PWA offline-ready |
+## 🖨️ Cetak Struk
+- Mode browser: klik **"🖨️ Cetak Struk"** → dialog cetak browser muncul
+- Pilih printer thermal Anda, set margin ke **None/Pas**, lalu cetak
+- Lebar kertas bisa diatur di **Pengaturan → 58mm / 80mm / Custom**
 
 ---
 
-## 📦 File Server (Flask) — Referensi
-
-File-file Python di root folder (`app.py`, `server.py`, `config/`, `models/`,
-`repositories/`, `services/`) adalah versi server yang masih bisa dipakai secara
-mandiri. Untuk menjalankan mode server:
-
-```bash
-pip install -r requirements.txt
-python app.py
-```
-
----
-
-## 📦 Dependensi
-
-**Frontend (CDN — tidak perlu install):**
-- Tailwind CSS
-- SweetAlert2
-- Chart.js
-- Cropper.js
-
-**Server (opsional — untuk mode Flask):**
-```
-Flask>=3.0
-qrcode>=7.4
-Pillow>=10.0
-pywin32>=306  # Windows-only, cetak struk server-side
-```
+## 📦 Dependensi (semua via CDN — tidak perlu install)
+- **Tailwind CSS** — utility-first CSS
+- **SweetAlert2** — dialog & notifikasi
+- **Chart.js** — grafik dashboard
+- **Cropper.js** — crop gambar produk
+- **QRCode.js** — generate QR code di struk (dimuat on-demand)
 
 ---
 
 ## 🔒 Catatan Keamanan
-
-Password disimpan plain-text untuk kesederhanaan. Untuk produksi:
-- Hash password (mis. `bcrypt` / `argon2`)
-- Data IndexedDB bisa di-inspect dari DevTools — jangan simpan data sensitif
+- Password disimpan plain-text untuk kesederhanaan. Untuk produksi, hash
+  password (mis. `bcrypt` / `argon2`).
+- Data IndexedDB bisa di-inspect dari DevTools — jangan simpan data sensitif.
+- Backup database secara berkala (Settings → Export data di masa depan).

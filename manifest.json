@@ -1,6 +1,6 @@
 {
-  "name": "SURANTAKA POS — Kasir",
-  "short_name": "SURANTAKA",
+  "name": "Mokundo Kasir",
+  "short_name": "Mokundo",
   "description": "Sistem Kasir (Point of Sale) — Kelola produk, transaksi, dan laporan keuangan.",
   "start_url": "./",
   "scope": "./",

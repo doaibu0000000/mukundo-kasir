@@ -29,9 +29,9 @@
 
   /* ---------- default settings (mirrors models/settings.py DEFAULTS) ---------- */
   const DEFAULT_SETTINGS = {
-    store_name: "SURANTAKA COFFEE",
+    store_name: "Mokundo Kasir",
     store_address:
-      "Kp. Surantaka, RT.02/RW.01, Desa Kalijati Timur, Kecamatan Kalijati, Kabupaten Subang, 41271",
+      "Jl. Contoh No. 123, Kota, Provinsi, 12345",
     store_phone: "0812-3456-7890",
     footer_note:
       "Mau pesan lagi tanpa antre atau tertarik punya bisnis kopi sendiri? Pindai saya!",
@@ -41,10 +41,10 @@
     wa_message: "",
     custom_url: "",
     qr_url: "https://wa.me/6281234567890",
-    invoice_prefix: "SC",
+    invoice_prefix: "MK",
     currency: "Rp",
-    app_name: "SURANTAKA",
-    app_title: "SURANTAKA POS — Kasir",
+    app_name: "Mokundo",
+    app_title: "Mokundo Kasir",
     app_logo: "",
     app_icon: "",
     paper_width: "58",

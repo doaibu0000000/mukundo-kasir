@@ -426,8 +426,8 @@
 
     /* ------ App branding: Name & Title ------ */
     async saveBranding() {
-      const appName = Helpers.$("#s-app-name").value.trim() || "SURANTAKA";
-      const appTitle = Helpers.$("#s-app-title").value.trim() || (appName + " POS — Kasir");
+      const appName = Helpers.$("#s-app-name").value.trim() || "Mokundo";
+      const appTitle = Helpers.$("#s-app-title").value.trim() || (appName + " Kasir");
       const warnEl = Helpers.$("#s-title-warn");
       try {
         await API.updateSettings({ app_name: appName, app_title: appTitle });
