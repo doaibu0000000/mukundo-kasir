@@ -1,0 +1,854 @@
+/* ==========================================================================
+   neu.css — SURANTAKA POS UI (Dark Neumorphism)
+
+   Design language:
+     - The surface colour EQUALS the background colour (the hallmark of true
+       neumorphism). Depth comes ONLY from dual soft-shadows:
+         * light highlight (top-left)
+         * dark shadow     (bottom-right)
+     - No hard borders. Rounded corners everywhere.
+     - Inputs & active states are PRESSED IN (inset shadows).
+     - Action buttons stay vivid (filled) but softened with soft shadow +
+       subtle gradient so they feel premium, not flat-flat.
+
+   Palette:
+     Base surface .... #222222  (dark neutral, slightly warm)
+     Text ............ #f6f6f6 / #c9c9c9 / #9a9a9a
+     Accents ......... blue / green / red / purple (vivid, pop on dark)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. THEME TOKENS
+   -------------------------------------------------------------------------- */
+:root,
+[data-theme="dark"] {
+  /* surfaces — card slightly BRIGHTER than background for 3D pop */
+  --bg-main:        #1a1a1a;   /* deep background                */
+  --bg-surface:     #2c2c2c;   /* cards / sidebar / containers   */
+  --bg-raised:      #353535;   /* hover / elevated element       */
+  --bg-inset:       #1e1e1e;   /* pressed input wells             */
+
+  /* neumorphism shadow colours — STRONGER for vivid 3D depth */
+  --neu-light:       rgba(255, 255, 255, 0.08);    /* highlight (top-left)   */
+  --neu-light-soft:  rgba(255, 255, 255, 0.05);
+  --neu-dark:        rgba(0, 0, 0, 0.65);          /* shadow   (bottom-right)*/
+  --neu-dark-strong: rgba(8, 8, 8, 0.80);          /* deep dark shadow        */
+  --neu-light-inset: rgba(255, 255, 255, 0.05);
+  --neu-dark-inset:  rgba(0, 0, 0, 0.70);
+
+  /* text */
+  --text-strong:    #f6f6f6;   /* headings & primary text    */
+  --text-body:      #e4e4e4;   /* default body               */
+  --text-muted:     #b5b5b5;   /* secondary                  */
+  --text-faint:     #8a8a8a;   /* labels / placeholders      */
+
+  /* soft dividers (used sparingly, never hard lines) */
+  --divider:        rgba(255, 255, 255, 0.06);
+  --row-hover:      rgba(255, 255, 255, 0.04);
+
+  /* vivid accents — fill buttons so they pop on dark */
+  --c-accent:        #4c8ff0;   /* primary blue                 */
+  --c-accent-2:      #a06be0;   /* secondary purple             */
+  --c-success:       #34c77b;   /* bayar / positive             */
+  --c-danger:        #ef4d5a;   /* hapus / destructive          */
+  --c-warn:          #f0a93b;   /* low stock / warning          */
+
+  --radius:          1.1rem;
+  --radius-sm:       0.85rem;
+  --radius-pill:     9999px;
+
+  /* scrollbar */
+  --scroll-thumb:      #3a3a3a;
+  --scroll-thumb-hover:#4a4a4a;
+}
+
+/* Light fallback (optional, via the toggle switch) */
+[data-theme="light"] {
+  --bg-main:        #e6e8ee;
+  --bg-surface:     #e6e8ee;
+  --bg-raised:      #eef0f5;
+  --bg-inset:       #d8dbe3;
+
+  --neu-light:       rgba(255, 255, 255, 0.90);
+  --neu-light-soft:  rgba(255, 255, 255, 0.75);
+  --neu-dark:        rgba(163, 177, 198, 0.50);
+  --neu-dark-strong: rgba(163, 177, 198, 0.60);
+  --neu-light-inset: rgba(255, 255, 255, 0.80);
+  --neu-dark-inset:  rgba(163, 177, 198, 0.55);
+
+  --text-strong:    #2b313a;
+  --text-body:      #3c434d;
+  --text-muted:     #5d6571;
+  --text-faint:     #8b94a1;
+
+  --divider:        rgba(0, 0, 0, 0.07);
+  --row-hover:      rgba(0, 0, 0, 0.04);
+
+  --c-accent:        #2f6fb0;
+  --c-accent-2:      #8750b5;
+  --c-success:       #1f9d57;
+  --c-danger:        #d63342;
+  --c-warn:          #d6841c;
+
+  --scroll-thumb:      #cdd2da;
+  --scroll-thumb-hover:#b3bac6;
+}
+
+/* --------------------------------------------------------------------------
+   2. BASE
+   -------------------------------------------------------------------------- */
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;            /* Mematikan scroll luar total */
+  background: var(--bg-main);
+  color: var(--text-body);
+}
+body {
+  transition: background-color .3s ease, color .3s ease;
+}
+
+/* Map Tailwind slate-* / neu-* utility classes used by the view JS to tokens
+   so existing views render correctly without editing them.               */
+.text-slate-700 { color: var(--text-strong) !important; }
+.text-slate-600 { color: var(--text-body)   !important; }
+.text-slate-500 { color: var(--text-muted)  !important; }
+.text-slate-400 { color: var(--text-faint)  !important; }
+.text-white     { color: var(--text-strong) !important; }
+
+.bg-white\/30, .hover\:bg-white\/30:hover { background: var(--row-hover) !important; }
+.bg-white\/30:hover { background: var(--row-hover) !important; }
+.border-white\/60 { border-color: var(--divider) !important; }
+.border-white\/40 { border-color: var(--divider) !important; }
+
+.text-neu-accent  { color: var(--c-accent)   !important; }
+.text-neu-accent2 { color: var(--c-accent-2) !important; }
+.text-neu-success { color: var(--c-success)  !important; }
+.text-neu-danger  { color: var(--c-danger)   !important; }
+.text-neu-warn    { color: var(--c-warn)     !important; }
+
+/* --------------------------------------------------------------------------
+   3. SURFACES — extruded (convex) neumorphism, no borders
+   -------------------------------------------------------------------------- */
+.neu-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius);
+  border: none;
+  box-shadow:
+    -8px -8px 20px var(--neu-light),
+    8px 8px 22px var(--neu-dark-strong);
+}
+.neu-card-soft {
+  background: var(--bg-surface);
+  border-radius: var(--radius);
+  border: none;
+  box-shadow:
+    -6px -6px 14px var(--neu-light),
+    6px 6px 14px var(--neu-dark);
+}
+.neu-card-right {                       /* sidebar */
+  background: var(--bg-surface);
+  border-right: none;
+  box-shadow:
+    10px 0 22px var(--neu-dark-strong);
+}
+.neu-raised {
+  background: var(--bg-raised);
+  border-radius: var(--radius-sm);
+}
+
+/* --------------------------------------------------------------------------
+   4. PRESSED / INSET (concave) — inputs, active wells
+   -------------------------------------------------------------------------- */
+.neu-inset,
+.neu-pressed {
+  background: var(--bg-inset);
+  border-radius: var(--radius);
+  border: none;
+  box-shadow:
+    inset 5px 5px 10px var(--neu-dark-inset),
+    inset -5px -5px 10px var(--neu-light-inset);
+}
+.neu-inset-sm {
+  background: var(--bg-inset);
+  border-radius: var(--radius-sm);
+  border: none;
+  box-shadow:
+    inset 4px 4px 8px var(--neu-dark-inset),
+    inset -4px -4px 8px var(--neu-light-inset);
+}
+
+/* --------------------------------------------------------------------------
+   5. INPUTS — inset (pressed) neumorphism
+   -------------------------------------------------------------------------- */
+.neu-input,
+.neu-select,
+.neu-textarea {
+  background: var(--bg-inset);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  color: var(--text-strong);
+  font-size: 0.9rem;
+  outline: none;
+  width: 100%;
+  box-shadow:
+    inset 4px 4px 8px var(--neu-dark-inset),
+    inset -4px -4px 8px var(--neu-light-inset);
+  transition: box-shadow .25s ease;
+}
+.neu-input::placeholder,
+.neu-textarea::placeholder { color: var(--text-faint); }
+.neu-input:focus,
+.neu-select:focus,
+.neu-textarea:focus {
+  box-shadow:
+    inset 5px 5px 10px var(--neu-dark-inset),
+    inset -5px -5px 10px var(--neu-light-inset),
+    0 0 0 2px color-mix(in srgb, var(--c-accent) 35%, transparent);
+}
+.neu-select option { background: var(--bg-surface); color: var(--text-strong); }
+
+/* Hide number-input spinners (arrows) across all browsers */
+.neu-input[type="number"]::-webkit-inner-spin-button,
+.neu-input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.neu-input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Select error state — soft red glow consistent with dark neumorphism */
+.neu-select-error {
+  box-shadow:
+    inset 4px 4px 8px var(--neu-dark-inset),
+    inset -4px -4px 8px var(--neu-light-inset),
+    0 0 0 2px rgba(255, 77, 79, 0.6) !important;
+}
+
+/* Input error state — soft red glow consistent with dark neumorphism */
+.neu-input-error {
+  box-shadow:
+    inset 4px 4px 8px var(--neu-dark-inset),
+    inset -4px -4px 8px var(--neu-light-inset),
+    0 0 0 2px rgba(255, 77, 79, 0.6) !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. BUTTONS
+   -------------------------------------------------------------------------- */
+.neu-btn,
+.neu-btn-primary,
+.neu-btn-success,
+.neu-btn-danger,
+.neu-btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: 0.72rem 1.3rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  transition: box-shadow .22s ease, transform .08s ease, color .2s ease, background-color .2s ease;
+}
+
+/* default / secondary button — extruded neumorphism, presses in on click */
+.neu-btn {
+  background: var(--bg-surface);
+  color: var(--text-strong);
+  box-shadow:
+    -5px -5px 10px var(--neu-light-soft),
+    5px 5px 12px var(--neu-dark-strong);
+}
+.neu-btn:hover { color: var(--c-accent); }
+.neu-btn:active,
+.neu-btn.is-active {
+  box-shadow:
+    inset 3px 3px 7px var(--neu-dark-inset),
+    inset -3px -3px 7px var(--neu-light-inset);
+  color: var(--c-accent);
+}
+
+/* PRIMARY — vivid fill, soft outer shadow + subtle gradient */
+.neu-btn-primary {
+  background: linear-gradient(145deg, var(--c-accent), color-mix(in srgb, var(--c-accent) 70%, #000));
+  color: #ffffff;
+  box-shadow:
+    -3px -3px 8px var(--neu-light-soft),
+    4px 4px 10px rgba(0,0,0,0.45);
+}
+.neu-btn-primary:hover {
+  background: linear-gradient(145deg, color-mix(in srgb, var(--c-accent) 88%, #fff), var(--c-accent));
+}
+.neu-btn-primary:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 3px 3px 7px rgba(0,0,0,0.40),
+    inset -3px -3px 7px rgba(255,255,255,0.12);
+}
+
+/* SUCCESS — "Bayar" */
+.neu-btn-success {
+  background: linear-gradient(145deg, var(--c-success), color-mix(in srgb, var(--c-success) 70%, #000));
+  color: #04140b;
+  box-shadow:
+    -3px -3px 8px var(--neu-light-soft),
+    4px 4px 10px rgba(0,0,0,0.45);
+}
+.neu-btn-success:hover {
+  background: linear-gradient(145deg, color-mix(in srgb, var(--c-success) 88%, #fff), var(--c-success));
+}
+.neu-btn-success:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 3px 3px 7px rgba(0,0,0,0.40),
+    inset -3px -3px 7px rgba(255,255,255,0.12);
+}
+
+/* DANGER — "Keluar" / "Hapus" */
+.neu-btn-danger {
+  background: linear-gradient(145deg, var(--c-danger), color-mix(in srgb, var(--c-danger) 68%, #000));
+  color: #ffffff;
+  box-shadow:
+    -3px -3px 8px var(--neu-light-soft),
+    4px 4px 10px rgba(0,0,0,0.45);
+}
+.neu-btn-danger:hover {
+  background: linear-gradient(145deg, color-mix(in srgb, var(--c-danger) 88%, #fff), var(--c-danger));
+}
+.neu-btn-danger:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 3px 3px 7px rgba(0,0,0,0.40),
+    inset -3px -3px 7px rgba(255,255,255,0.12);
+}
+
+.neu-btn-accent {
+  background: linear-gradient(145deg, var(--c-accent-2), color-mix(in srgb, var(--c-accent-2) 70%, #000));
+  color: #ffffff;
+  box-shadow:
+    -3px -3px 8px var(--neu-light-soft),
+    4px 4px 10px rgba(0,0,0,0.45);
+}
+.neu-btn-accent:hover {
+  background: linear-gradient(145deg, color-mix(in srgb, var(--c-accent-2) 88%, #fff), var(--c-accent-2));
+}
+
+/* icon button */
+.neu-icon-btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  width: 2.5rem; height: 2.5rem; border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  border: none; cursor: pointer; color: var(--text-muted);
+  box-shadow:
+    -3px -3px 7px var(--neu-light-soft),
+    3px 3px 7px var(--neu-dark);
+  transition: box-shadow .22s ease, color .2s ease;
+}
+.neu-icon-btn:hover { color: var(--text-strong); }
+.neu-icon-btn:active {
+  box-shadow:
+    inset 3px 3px 6px var(--neu-dark-inset),
+    inset -3px -3px 6px var(--neu-light-inset);
+}
+
+/* --------------------------------------------------------------------------
+   7. NAV ITEMS (sidebar)
+   -------------------------------------------------------------------------- */
+.nav-item {
+  display:flex; align-items:center; gap:.85rem;
+  padding: .8rem 1.1rem; border-radius: var(--radius-sm); cursor:pointer;
+  color: var(--text-muted); font-weight:500; font-size:.9rem;
+  border: none;
+  box-shadow:
+    -3px -3px 7px var(--neu-light-soft),
+    3px 3px 7px var(--neu-dark);
+  transition: box-shadow .22s ease, color .2s ease;
+}
+.nav-item:hover { color: var(--text-strong); }
+.nav-item .nav-ico { font-size:1.1rem; width:1.5rem; text-align:center; }
+.nav-item.active {
+  color: var(--c-accent);
+  box-shadow:
+    inset 3px 3px 7px var(--neu-dark-inset),
+    inset -3px -3px 7px var(--neu-light-inset);
+}
+
+/* --------------------------------------------------------------------------
+   8. BADGES & MISC
+   -------------------------------------------------------------------------- */
+.neu-badge {
+  display:inline-flex; align-items:center; gap:.35rem;
+  padding:.28rem .75rem; border-radius: var(--radius-pill);
+  font-size:.7rem; font-weight:700;
+  background: var(--bg-surface);
+  color: var(--text-strong);
+  border: none;
+  box-shadow:
+    inset 2px 2px 4px var(--neu-dark-inset),
+    inset -2px -2px 4px var(--neu-light-inset);
+}
+
+.product-card {
+  cursor:pointer;
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    -9px -9px 20px var(--neu-light),
+    9px 9px 20px var(--neu-dark-strong);
+}
+
+/* tables (reports) */
+table { border-collapse: separate; border-spacing: 0; }
+th, td { color: var(--text-body); border: none; }
+thead th { color: var(--text-faint); font-weight: 600; }
+
+/* scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb); border-radius: var(--radius-pill);
+  border: 2px solid var(--bg-main);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
+
+/* --------------------------------------------------------------------------
+   9. THEME TOGGLE SWITCH
+   -------------------------------------------------------------------------- */
+.theme-switch {
+  display:inline-flex; align-items:center; gap:.65rem;
+  padding: .5rem .95rem; border-radius: var(--radius-pill);
+  background: var(--bg-surface);
+  border: none;
+  cursor: pointer; user-select:none;
+  color: var(--text-strong); font-size:.8rem; font-weight:600;
+  box-shadow:
+    -3px -3px 7px var(--neu-light-soft),
+    3px 3px 7px var(--neu-dark);
+  transition: box-shadow .22s ease;
+}
+.theme-switch:hover { color: var(--c-accent); }
+
+.theme-track {
+  position: relative;
+  width: 44px; height: 24px; border-radius: var(--radius-pill);
+  background: var(--bg-surface);
+  border: none;
+  box-shadow:
+    inset 2px 2px 5px var(--neu-dark-inset),
+    inset -2px -2px 5px var(--neu-light-inset);
+}
+.theme-thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: linear-gradient(145deg, #ffe08a, #f0b429);
+  display:flex; align-items:center; justify-content:center;
+  font-size: 10px;
+  transition: transform .3s cubic-bezier(.4,1.3,.6,1);
+}
+[data-theme="dark"] .theme-thumb {
+  transform: translateX(20px);
+  background: linear-gradient(145deg, #c7d2fe, #818cf8);
+}
+
+/* --------------------------------------------------------------------------
+   10. SWEET ALERT 2 — dark neumorphism
+   -------------------------------------------------------------------------- */
+.swal2-popup.neu-popup {
+  background: var(--bg-surface) !important;
+  border-radius: var(--radius) !important;
+  border: none !important;
+  box-shadow:
+    -10px -10px 24px var(--neu-light),
+    12px 12px 30px var(--neu-dark-strong) !important;
+  font-family: 'Poppins', sans-serif !important;
+  color: var(--text-strong) !important;
+}
+.swal2-popup.neu-popup .swal2-title { color: var(--text-strong) !important; font-weight:600 !important; }
+.swal2-popup.neu-popup .swal2-html-container { color: var(--text-muted) !important; }
+.swal2-popup.neu-popup input,
+.swal2-popup.neu-popup textarea,
+.swal2-popup.neu-popup select {
+  background: var(--bg-surface) !important;
+  color: var(--text-strong) !important;
+  border: none !important;
+  box-shadow:
+    inset 3px 3px 6px var(--neu-dark-inset),
+    inset -3px -3px 6px var(--neu-light-inset) !important;
+}
+.neu-popup .swal2-styled.swal2-confirm,
+.neu-popup .swal2-styled.swal2-cancel {
+  border-radius: var(--radius-pill) !important;
+  font-weight: 600 !important;
+  border: none !important;
+}
+.neu-popup .swal2-styled.swal2-confirm {
+  background: var(--c-accent) !important;
+  box-shadow: -3px -3px 7px var(--neu-light-soft), 4px 4px 9px rgba(0,0,0,0.4) !important;
+}
+.neu-popup .swal2-styled.swal2-cancel {
+  background: var(--bg-surface) !important;
+  color: var(--text-strong) !important;
+  box-shadow: -3px -3px 7px var(--neu-light-soft), 3px 3px 7px var(--neu-dark) !important;
+}
+
+/* --------------------------------------------------------------------------
+   11. PRINT (58mm receipt) — always white, regardless of app theme
+   -------------------------------------------------------------------------- */
+@media screen {
+  #print-area { display: none !important; }
+}
+@media print {
+  body * { visibility: hidden !important; }
+  #print-area, #print-area * { visibility: visible !important; }
+  #print-area {
+    display: block !important;
+    position: absolute; left: 0; top: 0;
+    width: 58mm;
+    background: #fff;
+    color: #000;
+  }
+  @page { size: 58mm auto; margin: 0; }
+}
+
+.receipt {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 11px;
+  line-height: 1.45;
+  width: 58mm;
+  padding: 2mm 1.5mm;
+  color:#000;
+  background:#fff;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.receipt .center { text-align:center; }
+.receipt .right { text-align:right; }
+.receipt .bold { font-weight:700; }
+.receipt hr { border:none; border-top:1px dashed #000; margin:2px 0; }
+.receipt .row { display:flex; justify-content:space-between; gap:4px; }
+.receipt img.qr { display:block; margin:4px auto; max-width:32mm; }
+
+/* --------------------------------------------------------------------------
+   12. TRANSACTION LAYOUT — horizontal split (fixed cart sidebar)
+   --------------------------------------------------------------------------
+   Anti-double-scrollbar strategy:
+     - `.app-main` is the ONLY viewport-height container. It is a locked
+       flex column (overflow hidden) so it never scrolls itself — no outer
+       scrollbar can ever appear here.
+     - Each `.view-slot` becomes a flex child that grows to fill the
+       remaining height (flex:1 + min-height:0). Regular pages scroll
+       INSIDE their own slot; the Transaction view fills its slot exactly
+       and delegates scrolling to its grid + cart regions.
+     - We use 100dvh (dynamic viewport height) instead of a fragile
+       calc(100vh - Npx): dvh accounts for the OS chrome automatically, so
+       there is no fixed-px offset that can drift and cause overflow.
+   -------------------------------------------------------------------------- */
+/* Locked main area: never scrolls, no outer scrollbar */
+.app-main {
+  height: 100%;                /* fill the .flex.h-screen row exactly */
+  overflow: hidden;            /* scroll=None for the outer window */
+  display: flex;
+  flex-direction: column;
+}
+/* Header row — fixed height */
+.app-header { flex: 0 0 auto; }
+/* Page content region — grows, each view-slot fills it */
+.app-body {
+  flex: 1 1 0%;
+  min-height: 0;               /* lets children scroll instead of overflowing */
+  display: flex;
+  flex-direction: column;
+}
+.view-slot {
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;       /* so .tx-layout {flex:1} can fill it */
+  overflow-y: auto;            /* default: scrollable for normal pages */
+}
+/* Bottom breathing room for scrolling pages (Dashboard, Produk, dll.).
+   The Transaction view hosts .tx-layout directly, so it must stay flush. */
+.view-slot:not(:has(> .tx-layout)) {
+  padding-bottom: 2.5rem;
+}
+/* Legacy fallback for browsers without :has() */
+@supports not selector(:has(*)) {
+  .view-slot > *:not(.tx-layout) ~ * { /* no-op guard */ }
+}
+/* Transaction slot fills its parent exactly and never scrolls itself */
+.tx-layout {
+  display: flex;
+  gap: 1.25rem;
+  flex: 1 1 0%;
+  min-height: 0;
+  align-items: stretch;        /* both columns fill full height */
+}
+.tx-catalog {
+  flex: 1 0 240px;              /* flex-grow:1, flex-shrink:0 (TIDAK BOLEH MENYUSUT
+                                   di bawah flex-basis), flex-basis:240px */
+  min-width: 240px !important;  /* !important untuk menimpa rule lain yang
+                                   mungkin masih punya min-width:0 */
+  overflow-x: hidden;           /* no ugly horizontal scroll inside when squeezed */
+  display: flex;
+  flex-direction: column;
+  padding-right: 0.25rem;
+}
+/* Fixed search bar — locked on top, never scrolls away */
+.tx-search-bar {
+  flex: 0 0 auto;
+}
+/* Scrollable product grid — the ONLY region that scrolls on the left */
+.tx-catalog-scroll {
+  flex: 1 1 0%;
+  min-height: 0;               /* critical: lets the flex child shrink & scroll */
+  overflow-y: auto;
+  padding-top: 1rem;
+}
+/* Cart sidebar — locked to full height, internal-only scrolling */
+.tx-cart {
+  flex: 0 0 380px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;             /* wrapper never scrolls; inner list does */
+}
+/* (a) Header: "Keranjang · N item" — fixed, never scrolls */
+.tx-cart-header {
+  flex: 0 0 auto;
+}
+/* (b) Item list — the ONLY scrollable part of the cart.
+      flex:1 + min-height:0 = absorbs ALL leftover space and scrolls when
+      full, so the footer below is never pushed and never scrolls. */
+.tx-cart-list {
+  flex: 1 1 0%;
+  min-height: 0;                /* critical: allows shrinking & scrolling */
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+/* (c) Footer: Platform, Diskon, Subtotal, Total, Bayar — locked to bottom,
+      NEVER scrolls. No overflow:auto/scroll anywhere here. */
+.tx-cart-footer {
+  flex: 0 0 auto;               /* natural height, never pushed off-screen */
+  overflow: hidden;
+}
+
+/* Responsive: stack vertically on smaller screens */
+@media (max-width: 900px) {
+  .tx-layout {
+    flex-direction: column;
+  }
+  .tx-cart {
+    flex: 0 0 auto;
+    width: 100%;
+    max-height: 70vh;           /* keep checkout reachable on mobile layout */
+  }
+  /* Same 3-section discipline on mobile: list scrolls, footer stays put */
+  .tx-cart-list {
+    max-height: none;           /* let the flex:1 sizing apply naturally */
+  }
+}
+
+/* --------------------------------------------------------------------------
+   13. RESPONSIVE PRODUCT GRID (auto-fill + minmax)
+   --------------------------------------------------------------------------
+   The previous fixed breakpoint grid (grid-cols-2/3/4) kept squeezing cards
+   down to ~80px on narrow windows, truncating product names ("Ameri...",
+   "Caffe..."). This uses CSS `repeat(auto-fill, minmax(MIN, 1fr))` instead:
+   the browser fits as many whole columns as it can and drops the rest to the
+   next row (wraps). When space is very tight it naturally collapses to a
+   single column, while every card never shrinks below MIN — so name, price
+   and variants always stay fully visible. Vertical scrolling is handled by
+   the parent .tx-catalog (overflow-y:auto) / the page main area.
+   -------------------------------------------------------------------------- */
+
+/* Cashier (transaction) catalog — compact cards */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+/* Admin (products) catalog — slightly larger cards */
+.product-grid-admin {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.25rem;
+}
+/* Floor: guarantee one readable column on extremely narrow windows */
+@media (max-width: 380px) {
+  .product-grid,
+  .product-grid-admin {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Multi-line clamp so long product names wrap to 2 lines instead of being
+   hard-truncated to "Ameri..." / "Caffe...". Falls back gracefully. */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+/* Payment Method Selector in Neumorphism Dark Mode */
+.tx-payment-method-container {
+  margin-top: 0.5rem;
+}
+.payment-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+.payment-btn {
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  box-shadow:
+    -3px -3px 7px var(--neu-light-soft),
+    3px 3px 8px var(--neu-dark-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  border: none;
+}
+.payment-btn:hover {
+  color: var(--text-strong);
+}
+.payment-btn.is-active {
+  box-shadow:
+    inset 2px 2px 5px var(--neu-dark-inset),
+    inset -2px -2px 5px var(--neu-light-inset);
+  color: var(--c-accent);
+  text-shadow: 0 0 8px rgba(76, 143, 240, 0.4);
+  font-weight: 600;
+  background: var(--bg-inset);
+}
+
+/* --------------------------------------------------------------------------
+   14. RECEIPT PREVIEW MODAL — pop-up struk pembayaran
+   -------------------------------------------------------------------------- */
+.receipt-preview {
+  width: 300px;
+  max-height: 70vh;
+  overflow-y: auto;
+  margin: 0 auto;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-body);
+  background: var(--bg-inset);
+  border-radius: var(--radius-sm);
+  padding: 16px 14px;
+  box-shadow:
+    inset 3px 3px 6px var(--neu-dark-inset),
+    inset -3px -3px 6px var(--neu-light-inset);
+  /* scrollbar inside the receipt (only when content overflows) */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) transparent;
+}
+.receipt-preview::-webkit-scrollbar { width: 4px; }
+.receipt-preview::-webkit-scrollbar-track { background: transparent; }
+.receipt-preview::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: var(--radius-pill); }
+
+/* Header — toko info */
+.receipt-preview .rp-header { text-align: center; margin-bottom: 6px; }
+.receipt-preview .rp-store-name { font-weight: 700; font-size: 15px; color: var(--text-strong); letter-spacing: .5px; }
+.receipt-preview .rp-store-info { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* Dashed separator */
+.receipt-preview .rp-separator { border: none; border-top: 1px dashed var(--text-faint); margin: 6px 0; }
+
+/* First-row spacing after separator (small top padding) */
+.receipt-preview .rp-row:first-child,
+.receipt-preview .rp-item:first-child { padding-top: 4px; }
+
+/* Key-value rows (left label, right value) */
+.receipt-preview .rp-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; line-height: 1.8; padding: 2px 0; }
+.receipt-preview .rp-row .label { color: var(--text-muted); }
+.receipt-preview .rp-row .value { color: var(--text-strong); text-align: right; font-weight: 500; }
+
+/* Item rows — flex with shrink, price stays right-aligned on first line */
+.receipt-preview .rp-item { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; font-size: 12px; line-height: 1.8; padding: 2px 0; }
+.receipt-preview .rp-item .item-left { color: var(--text-body); flex: 1; min-width: 0; overflow: hidden; word-break: break-word; }
+.receipt-preview .rp-item .item-price { color: var(--text-strong); white-space: nowrap; font-weight: 500; flex-shrink: 0; }
+
+/* Grand total highlight */
+.receipt-preview .rp-grand .value { font-weight: 700; font-size: 13px; color: var(--c-accent); }
+
+/* Discount row */
+.receipt-preview .rp-disc .value { color: var(--c-danger); }
+
+/* Promo text */
+.receipt-preview .rp-promo { text-align: center; font-size: 10px; color: var(--text-faint); margin-top: 8px; line-height: 1.5; font-style: italic; }
+
+/* QR code */
+.receipt-preview .rp-qr { display: block; margin: 8px auto; max-width: 100px; border-radius: 4px; }
+
+/* QR placeholder (when no QR configured) */
+.receipt-preview .rp-qr-placeholder {
+  display: flex; align-items: center; justify-content: center;
+  width: 100px; height: 100px; margin: 8px auto;
+  border: 1px dashed var(--text-faint); border-radius: 6px;
+  font-size: 9px; color: var(--text-faint); text-align: center;
+  line-height: 1.3; padding: 8px;
+}
+
+/* Footer */
+.receipt-preview .rp-footer { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 8px; font-weight: 600; }
+
+/* SweetAlert2 overrides for receipt modal */
+.swal2-popup.receipt-modal {
+  background: var(--bg-surface) !important;
+  border-radius: var(--radius) !important;
+  border: none !important;
+  box-shadow:
+    -10px -10px 24px var(--neu-light),
+    12px 12px 30px var(--neu-dark-strong) !important;
+  font-family: 'Poppins', sans-serif !important;
+  color: var(--text-strong) !important;
+  padding: 1.2rem 1rem !important;
+}
+.swal2-popup.receipt-modal .swal2-title { color: var(--text-strong) !important; font-weight: 600 !important; font-size: 1.1rem !important; }
+.swal2-popup.receipt-modal .swal2-close { color: var(--text-faint) !important; font-size: 1.6rem !important; }
+.swal2-popup.receipt-modal .swal2-close:hover { color: var(--text-strong) !important; }
+.swal2-popup.receipt-modal .swal2-html-container { color: var(--text-muted) !important; padding: 0 !important; margin: 0 !important; }
+.swal2-popup.receipt-modal .swal2-actions { margin-top: 1rem !important; gap: 0.6rem !important; }
+.swal2-popup.receipt-modal .swal2-styled.swal2-confirm {
+  background: linear-gradient(145deg, var(--c-success), color-mix(in srgb, var(--c-success) 70%, #000)) !important;
+  color: #04140b !important;
+  border-radius: var(--radius-pill) !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  border: none !important;
+  box-shadow: -3px -3px 8px var(--neu-light-soft), 4px 4px 10px rgba(0,0,0,0.45) !important;
+  padding: 0.72rem 1.6rem !important;
+}
+.swal2-popup.receipt-modal .swal2-styled.swal2-cancel {
+  background: var(--bg-surface) !important;
+  color: var(--text-strong) !important;
+  border-radius: var(--radius-pill) !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  border: none !important;
+  box-shadow: -3px -3px 7px var(--neu-light-soft), 3px 3px 7px var(--neu-dark) !important;
+  padding: 0.72rem 1.6rem !important;
+}
+

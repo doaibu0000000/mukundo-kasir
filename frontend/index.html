@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>SURANTAKA POS — Kasir</title>
+
+  <!-- ===================== PWA / Mobile app meta ===================== -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1E1E1E" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#e6eef8" media="(prefers-color-scheme: light)" />
+  <meta name="description" content="Sistem Kasir (Point of Sale) — Kelola produk, transaksi, dan laporan keuangan." />
+
+  <!-- iOS / Safari standalone support -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SURANTAKA" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png" />
+  <link rel="icon" sizes="192x192" href="icons/icon-192.png" />
+
+  <!-- Pre-paint theme bootstrap: apply saved theme BEFORE CSS renders to
+       avoid a flash of the wrong theme. Runs synchronously, head-only.
+       Defaults to DARK (#121212 / #3b3b3b / #f6f6f6). -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("pos.theme");
+        document.documentElement.setAttribute("data-theme", saved || "dark");
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+
+  <!-- Tailwind via CDN (config injected below) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            neu: {
+              base:   "#e6eef8",
+              dark:   "#a3b1c6",
+              light:  "#ffffff",
+              accent: "#6d8db5",
+              accent2:"#9b7bd4",
+              success:"#4caf83",
+              danger: "#d65d6b",
+              warn:   "#e0a458",
+            },
+          },
+          fontFamily: {
+            sans: ['Poppins', 'Segoe UI', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Google font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Chart.js for dashboard -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Cropper.js for image cropping -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1/dist/cropper.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1/dist/cropper.min.js"></script>
+
+  <!-- Neumorphism styles -->
+  <link rel="stylesheet" href="css/neu.css" />
+
+  <!-- App logic (db + backend MUST load before api.js) -->
+  <script defer src="js/theme.js"></script>
+  <script defer src="js/helpers.js"></script>
+  <script defer src="js/db.js"></script>
+  <script defer src="js/backend.js"></script>
+  <script defer src="js/api.js"></script>
+  <script defer src="js/notify.js"></script>
+  <script defer src="js/state.js"></script>
+  <script defer src="js/views/login.js"></script>
+  <script defer src="js/views/dashboard.js"></script>
+  <script defer src="js/views/products.js"></script>
+  <script defer src="js/views/categories.js"></script>
+  <script defer src="js/views/transaction.js"></script>
+  <script defer src="js/views/reports.js"></script>
+  <script defer src="js/views/settings.js"></script>
+  <script defer src="js/router.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+
+<body class="app-bg text-slate-600 font-sans antialiased">
+
+  <!-- ================================================================ -->
+  <!-- LOADER                                                            -->
+  <!-- ================================================================ -->
+  <div id="app-loader" class="fixed inset-0 z-[100] flex flex-col items-center justify-center app-bg">
+    <div class="neu-card w-64 h-64 flex flex-col items-center justify-center gap-6">
+      <div class="w-16 h-16 rounded-full neu-inset flex items-center justify-center">
+        <div class="w-8 h-8 rounded-full border-4 border-neu-accent border-t-transparent animate-spin"></div>
+      </div>
+      <p class="text-sm text-slate-400">Memuat aplikasi…</p>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- LOGIN SCREEN                                                      -->
+  <!-- ================================================================ -->
+  <section id="screen-login" class="hidden min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-md">
+      <div class="neu-card rounded-3xl p-10">
+          <div class="flex flex-col items-center mb-8">
+          <div id="login-logo" class="w-20 h-20 rounded-full neu-pressed flex items-center justify-center mb-5">
+            <span class="text-3xl">☕</span>
+          </div>
+          <h1 id="login-brand" class="text-2xl font-semibold text-slate-700">SURANTAKA COFFEE</h1>
+          <p class="text-sm text-slate-400 mt-1">Sistem Kasir (POS)</p>
+        </div>
+
+        <form id="login-form" class="space-y-6" autocomplete="off">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-2 ml-1">USERNAME</label>
+	            <input id="login-username" type="text" class="neu-input w-full" placeholder="admin / kasir" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-2 ml-1">PASSWORD</label>
+            <div class="relative">
+              <input id="login-password" type="password" class="neu-input w-full pr-12" placeholder="Masukkan password" />
+              <button type="button" id="toggle-password" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer p-1" aria-label="Tampilkan password">
+                <svg id="eye-off" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                </svg>
+                <svg id="eye-on" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411M12 5c-1.68 0-3.264.463-4.622 1.268M21.542 12a10.025 10.025 0 01-4.132 5.411"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="neu-btn-primary w-full">Masuk</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ -->
+  <!-- MAIN APP SHELL                                                    -->
+  <!-- ================================================================ -->
+  <section id="screen-app" class="hidden min-h-screen">
+    <div class="flex h-screen">
+
+      <!-- ===================== SIDEBAR ===================== -->
+      <aside id="sidebar" class="w-64 shrink-0 neu-card-right rounded-none m-0 flex flex-col p-5">
+        <div class="flex items-center gap-3 mb-10 px-2">
+          <div id="sidebar-logo" class="w-11 h-11 rounded-2xl neu-pressed flex items-center justify-center text-xl">☕</div>
+          <div>
+            <p id="sidebar-brand" class="font-semibold text-slate-700 leading-tight">SURANTAKA</p>
+            <p class="text-xs text-slate-400">version 5.9</p>
+          </div>
+        </div>
+
+        <nav id="nav-menu" class="flex-1 space-y-2"></nav>
+
+        <div class="pt-4 border-t border-white/60">
+          <div class="flex items-center gap-3 px-2 mb-3">
+            <div class="w-10 h-10 rounded-full neu-pressed flex items-center justify-center text-sm font-semibold text-neu-accent"
+                 id="user-avatar">?</div>
+            <div class="flex-1 min-w-0">
+              <p id="user-name" class="text-sm font-medium text-slate-700 truncate">—</p>
+              <p id="user-role" class="text-xs text-slate-400 capitalize">—</p>
+            </div>
+          </div>
+          <!-- Tombol Install PWA — hanya muncul jika browser mendukung -->
+          <button id="btn-install-app" class="neu-btn w-full mb-2 hidden">📱 Install Aplikasi</button>
+          <button id="btn-logout" class="neu-btn-danger w-full">Keluar</button>
+        </div>
+      </aside>
+
+      <!-- ===================== CONTENT ===================== -->
+      <main class="app-main flex-1 p-8">
+        <header class="app-header mb-6 flex items-center justify-between">
+          <div>
+            <h2 id="page-title" class="text-2xl font-semibold text-slate-700">Dashboard</h2>
+            <p id="page-subtitle" class="text-sm text-slate-400 mt-1">Ringkasan operasional toko</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <div id="theme-switch-slot" class="flex items-center"></div>
+            <div id="page-actions" class="flex items-center gap-3"></div>
+          </div>
+        </header>
+
+        <div id="view-root" class="app-body"></div>
+      </main>
+    </div>
+  </section>
+
+  <!-- Hidden file input for uploads -->
+  <input type="file" id="hidden-file-input" class="hidden" accept="image/*" />
+
+  <!-- Print area (58mm receipt) -->
+  <div id="print-area" class="hidden"></div>
+
+  <!-- ===================== Service Worker (PWA offline) ===================== -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker
+          .register("sw.js")
+          .catch(function (err) {
+            console.warn("[PWA] Service worker gagal didaftarkan:", err);
+          });
+      });
+    }
+  </script>
+</body>
+</html>
